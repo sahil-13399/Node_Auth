@@ -1,5 +1,5 @@
 import express from "express";
-
+import jwt from 'jsonwebtoken'
 
 const app = express();
 
@@ -9,6 +9,21 @@ const arr = []
 const set = new Set();
 const secretKeyForJWT = "FDaFdsFDafsFdasfFDSAsd";
 
+
+app.post("/login",(req,res) => {
+    const {username,password} = req.body;
+
+    if(!set.has(username)) {
+        res.status(401).json({message:"Incorrect username and password"})
+    } else {
+        res.status(200).json({"auth-token" : generateAccessToken(username)})
+    }
+
+})
+
+function generateAccessToken(username) {
+    return jwt.sign(username, secretKeyForJWT, { expiresIn: '3600s' });
+  }
 
 app.post("/register",(req,res) => {
     const {username} = req.body
