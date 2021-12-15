@@ -22,7 +22,7 @@ app.post("/login",(req,res) => {
 })
 
 function generateAccessToken(username) {
-    return jwt.sign(username, secretKeyForJWT, { expiresIn: '3600s' });
+    return jwt.sign({username}, secretKeyForJWT, { expiresIn: '1h' });
   }
 
 app.post("/register",(req,res) => {
@@ -48,6 +48,17 @@ app.get("/profiles", (req,res) => {
 
 app.put("/profile",(req,res) => {
     const {username,password,college,name} = req.body;
+
+    const token = req.header('auth-token')
+
+    if(!token) return res.status(401).json('Unauthorize user')
+
+    try {
+        const decoded = jwt.verify(token,secretKeyForJWT);
+        console.log(decoded)
+    } catch (error) {
+        res.status(400).json('Token not valid')
+    }
     let isValid = false;
     let requestedUserIndexInGlobalArray = -1;
     for (let i = 0; i < arr.length; i ++) {
@@ -69,12 +80,6 @@ app.put("/profile",(req,res) => {
     }
 
 })
-
-app.post("/me",(req,res) => {
-    const {id,name} = req.body
-    res.send(JSON.stringify({id,name}))
-})
-
 
 
 app.listen(7050, () => {
