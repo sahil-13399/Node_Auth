@@ -5,22 +5,53 @@ const app = express();
 
 app.use(express.json())
 
-const arr = [ 
-    
-]
+const arr = []
+const set = new Set();
 
 
-app.get("/",(req,res) => {
-    res.send("HEllo WOrld")
+app.post("/register",(req,res) => {
+    const {username} = req.body
+    if(set.has(username)) {
+        res.status(400).json({"message" : "Username already exists"})
+    } else {
+        arr.push(req.body)
+        set.add(username)
+        res.status(200).json({message : "Successfully registered"})
+    }
 })
 
-app.get("/me", (req,res) => {
-    res.send(`Your query ID is ${req.query.id}`)
+app.get("/profiles", (req,res) => {
+    const usersDataCopy = JSON.parse(JSON.stringify(arr));
+
+    for(let i = 0; i < usersDataCopy.length; i++) {
+        delete usersDataCopy[i].password
+    }
+
+    res.status(200).json(usersDataCopy)
 } )
 
-app.get("/:id",(req,res) => {
-    const {id} = req.params
-    res.send(`Your ID is ${id}`)
+app.put("/profile",(req,res) => {
+    const {username,password,college,name} = req.body;
+    let isValid = false;
+    let requestedUserIndexInGlobalArray = -1;
+    for (let i = 0; i < arr.length; i ++) {
+        const currentUser = arr[i];
+        if(currentUser.username == username && currentUser.password == password) {
+            isValid = true;
+            requestedUserIndexInGlobalArray = i;
+        }
+    }
+
+    if(!isValid) {
+        res.status(401).json({message : "Incorrect password or username entered"})
+    } else {
+        arr[requestedUserIndexInGlobalArray].username = username;
+        arr[requestedUserIndexInGlobalArray].password = password;
+        arr[requestedUserIndexInGlobalArray].college = college;
+        arr[requestedUserIndexInGlobalArray].name = name;
+        res.status(200).json({message : "Updated user details"})
+    }
+
 })
 
 app.post("/me",(req,res) => {
@@ -30,6 +61,6 @@ app.post("/me",(req,res) => {
 
 
 
-app.listen(1337, () => {
-    console.log("Server started at 1337")
+app.listen(7050, () => {
+    console.log("Server started at 7050")
 })
