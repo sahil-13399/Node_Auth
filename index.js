@@ -5,6 +5,10 @@ const app = express();
 
 app.use(express.json())
 
+const arr = [ 
+    
+]
+
 
 app.get("/",(req,res) => {
     res.send("HEllo WOrld")
@@ -23,6 +27,7 @@ app.post("/me",(req,res) => {
     const {id,name} = req.body
     res.send(JSON.stringify({id,name}))
 })
+
 
 
 app.listen(1337, () => {
