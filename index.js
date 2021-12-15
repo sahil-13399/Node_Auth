@@ -7,6 +7,7 @@ app.use(express.json())
 
 const arr = []
 const set = new Set();
+const secretKeyForJWT = "FDaFdsFDafsFdasfFDSAsd";
 
 
 app.post("/register",(req,res) => {
